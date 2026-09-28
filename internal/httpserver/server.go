@@ -63,12 +63,8 @@ func (s *Server) Run(ctx context.Context) error {
 		context.WithoutCancel(ctx), s.shutdownTimeout)
 	defer cancel()
 
-	if err = s.srv.Shutdown(shutdownCtx); err != nil {
-		err = s.srv.Close()
-		if err != nil {
-			return err
-		}
-		return fmt.Errorf("shutdown: %w", err)
+	if err := s.srv.Shutdown(shutdownCtx); err != nil {
+		return errors.Join(fmt.Errorf("shutdown: %w", err), s.srv.Close())
 	}
 	if err = <-serveErr; !errors.Is(err, http.ErrServerClosed) {
 		return fmt.Errorf("serve: %w", err)
