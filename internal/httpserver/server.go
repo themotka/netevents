@@ -40,7 +40,8 @@ func New(cfg config.HTTP, log *slog.Logger, h http.Handler) *Server {
 // Run обслуживает запросы до завершения ctx, затем останавливается,
 // давая запросам в обработке завершиться в пределах shutdown-таймаута.
 func (s *Server) Run(ctx context.Context) error {
-	ln, err := net.Listen("tcp", s.srv.Addr)
+	lc := &net.ListenConfig{}
+	ln, err := lc.Listen(ctx, "tcp", s.srv.Addr)
 	if err != nil {
 		return fmt.Errorf("listen %s: %w", s.srv.Addr, err)
 	}
