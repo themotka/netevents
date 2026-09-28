@@ -1,0 +1,23 @@
+version: "2"
+
+linters:
+  default: standard
+  enable:
+    - bodyclose
+    - errorlint
+    - gocritic
+    - misspell
+    - noctx
+    - revive
+    - sloglint
+  settings:
+    sloglint:
+      attr-only: true
+      msg-style: lowercased
+      key-naming-case: snake
+      no-global: all
+
+formatters:
+  enable:
+    - gofumpt
+    - goimports

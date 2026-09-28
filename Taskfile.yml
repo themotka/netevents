@@ -1,0 +1,39 @@
+version: '3'
+
+vars:
+  BIN: bin/netevents
+  VERSION:
+    sh: git describe --tags --always --dirty 2>/dev/null || echo dev
+  COMMIT:
+    sh: git rev-parse --short HEAD 2>/dev/null || echo none
+  LDFLAGS: -s -w -X main.version={{.VERSION}} -X main.commit={{.COMMIT}}
+
+tasks:
+  build:
+    desc: build the service binary
+    cmds:
+      - go build -ldflags "{{.LDFLAGS}}" -o {{.BIN}} ./cmd/netevents
+
+  run:
+    desc: run the service locally with human-readable logs
+    deps: [build]
+    env:
+      LOG_FORMAT: text
+      LOG_LEVEL: debug
+    cmds:
+      - ./{{.BIN}}
+
+  test:
+    desc: run tests with the race detector
+    cmds:
+      - go test -race ./...
+
+  lint:
+    desc: run linters
+    cmds:
+      - golangci-lint run ./...
+
+  fmt:
+    desc: format the code
+    cmds:
+      - golangci-lint fmt ./...
